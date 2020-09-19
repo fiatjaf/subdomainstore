@@ -1,0 +1,45 @@
+<pre id="message"></pre>
+
+<script>
+  message.innerHTML = `
+# buy a subdomain of ${location.hostname}!
+curl '${location.protocol}://${location.host}/buy/<subdomain>?amount=10000' | jq -r '.pr'
+
+# when paying the invoice, take note of the payment proof/preimage.
+# it will be your authorization token.
+# after paying, use the following commands to...
+
+# list your records:
+curl -H 'Authorization: <preimage>' '${location.protocol}://${location.host}/<subdomain>/records' | jq
+
+# create a record:
+curl -H 'Authorization: <preimage>' -X POST '${location.protocol}://${location.host}/<subdomain>/CNAME/www/somewhere.com' # will create a CNAME record from www.<subdomain>.${location.host} to somewhere.com
+curl -H 'Authorization: <preimage>' -X POST '${location.protocol}://${location.host}/<subdomain>/MX/email/mail.mailserver.com?priority=10' # will create an MX record from email.<subdomain>.${location.host} to mail.mailserver.com with priority 10
+curl -H 'Authorization: <preimage>' -X POST '${location.protocol}://${location.host}/<subdomain>/A/@/123.123.123.123?proxy=true' # will create an A record from the naked subdomain (<subdomain>.${location.host}) to 123.123.123.123 and proxy these requests through cloudflare (yield automatic free https certificates)
+
+# delete a record:
+curl -H 'Authorization: <preimage>' -X DELETE '${location.protocol}://${location.host}/<subdomain>/<type>/<name>' # will delete all records with given type and name
+curl -H 'Authorization: <preimage>' -X DELETE '${location.protocol}://${location.host}/<subdomain>/<type>' # will delete all records with given type
+curl -H 'Authorization: <preimage>' -X DELETE '${location.protocol}://${location.host}/<subdomain>' # will delete all records
+
+# recharge your hours periodically so you don't lose your subdomain
+curl '${location.protocol}://${location.host}/recharge/<subdomain>?amount=10000' | jq -r '.pr'
+
+# you can also use a reusable lnurl-pay address so it is stored in your wallet
+# and you can call it again later to recharge
+# the lnurl-pay call will also show you your subdomain status
+# lnurl1...
+
+`.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+</script>
+
+<style>
+  #message {
+    max-width: 600px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-around;
+  }
+</style>
