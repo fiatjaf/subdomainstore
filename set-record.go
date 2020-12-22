@@ -37,7 +37,11 @@ func setRecord(w http.ResponseWriter, r *http.Request) {
 		Proxied:  proxy,
 	})
 	if err != nil || resp.Response.Success != true {
-		log.Warn().Err(err).Interface("response", resp.Response).
+		var response interface{}
+		if resp != nil {
+			response = resp.Response
+		}
+		log.Warn().Err(err).Interface("response", response).
 			Msg("error setting dns record")
 		http.Error(w, "error setting dns record", 400)
 	}
