@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/cloudflare/cloudflare-go"
 	"github.com/gorilla/mux"
@@ -34,6 +35,10 @@ func deleteRecord(w http.ResponseWriter, r *http.Request) {
 	deleted := 0
 	failed := 0
 	for _, cfr := range matching {
+		if !strings.HasSuffix(cfr.Name, subdomain+"."+cfr.ZoneName) {
+			continue
+		}
+
 		err := cf.DeleteDNSRecord(s.CloudflareZoneId, cfr.ID)
 		if err != nil {
 			log.Warn().Err(err).Str("subdomain", subdomain).
